@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kuis/data/dataquestion.dart';
 import 'package:kuis/question.dart';
+import 'package:kuis/result.dart';
 import 'package:kuis/widget/startquiz.dart';
 
 class Quiz extends StatefulWidget {
@@ -12,21 +14,9 @@ class Quiz extends StatefulWidget {
 }
 
 class _QuizState extends State<Quiz> {
-  //cara  pertama untuk merender up state konten
-  // Widget? activeScreen;
 
-  // @override
-  // void initState() {
-  //   activeScreen = StartQuiz(switchScreen);
-  //   super.initState();
-  // }
-
-  // void switchScreen() {
-  //   setState(() {
-  //     activeScreen = const QuestionScreen();
-  //   });
-  // }  
- 
+  //Alasan karena menggunkan list string dikarenakan saat list itu akan terisi (walaupun disitu masih kosong) akan didapatkan jenis string
+  List<String> selectedAnswer = [];//[] ini masih kosong 
   //cara dengan menggunakan if statement dalam merender kondisi
   var activeScreen = 'startquiz-screen';
   
@@ -36,12 +26,28 @@ class _QuizState extends State<Quiz> {
     });
   }
 
+  void chooseAnswer(String answer) {
+    selectedAnswer.add(answer);
+
+    //logic jika pertanyaan selesai maka akan ditampilkan ke result screen
+    if (selectedAnswer.length == questions.length) {
+      setState(() {
+        selectedAnswer = [];
+        activeScreen = 'result-screen';
+      });
+    }
+  }
+
   @override
   Widget build(context) {
     Widget screenWidget = StartQuiz(switchScreen);
 
     if (activeScreen == 'question-screen') {
-      screenWidget = const QuestionScreen();
+      screenWidget = QuestionScreen(onSelectAnswer: chooseAnswer,);
+    }
+
+    if (activeScreen == 'result-screen') {
+      screenWidget = const ResultScreen();
     }
 
     return MaterialApp(
@@ -63,3 +69,18 @@ class _QuizState extends State<Quiz> {
     );
   }
 }
+  //cara  pertama untuk merender up state konten
+  // Widget? activeScreen;
+
+  // @override
+  // void initState() {
+  //   activeScreen = StartQuiz(switchScreen);
+  //   super.initState();
+  // }
+
+  // void switchScreen() {
+  //   setState(() {
+  //     activeScreen = const QuestionScreen();
+  //   });
+  // }  
+ 

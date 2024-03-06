@@ -2,20 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:kuis/widget/answer_button.dart';
 import 'package:kuis/data/dataquestion.dart';
 
-class QuestionScreen extends StatefulWidget{
-  const QuestionScreen({super.key});
+class QuestionScreen extends StatefulWidget {
+  // Perbaiki konstruktor seperti di bawah ini
+  const QuestionScreen({Key? key, required this.onSelectAnswer}) : super(key: key);
+
+  // Ubah deklarasi onSelectAnswer seperti ini
+  final void Function(String answer) onSelectAnswer;
 
   @override
-  State<QuestionScreen> createState() {
-    return _QuestionScreenState();
-  }
+  State<QuestionScreen> createState() => _QuestionScreenState();
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
-  final currentQuestion = questions[0];
+  var taskQuestionIndex = 0;
+
+  void answerQuestion(String selectedAnswer) {
+    widget.onSelectAnswer(selectedAnswer);
+    setState(() {
+      taskQuestionIndex++;
+    });
+  }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
+    final currentQuestion = questions[taskQuestionIndex];
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -30,19 +40,15 @@ class _QuestionScreenState extends State<QuestionScreen> {
             ),
           ),
           const SizedBox(height: 30),
-
-          //dalam penggunaan shullfer disini tidak mengubah atau menghilangkan dari nilai yang sudah di mapping kan sebelumnya 
-          ...currentQuestion.getShuffelAnswer().map((answer){
-            return AnswerButton(answerText: answer, onTap: () {});
-            //dimana list answerbutton yang sebelumnya didalam list answer.map()
-            //setelah dikeluarkan dengan menggunakan[...] maka akan dijadikan list value indivindhu.
-          })
-
-          //cara pertama[1] dalam menggunakan data jawaban yang sudah dibuat
-          // AnswerButton(answerText:currentQuestion.answer[0], onTap: () {}),
-          // AnswerButton(answerText:currentQuestion.answer[1], onTap: () {}),
-          // AnswerButton(answerText:currentQuestion.answer[2], onTap: () {}),
-          // AnswerButton(answerText:currentQuestion.answer[3], onTap: () {}),
+          // Gunakan .toList() setelah map() untuk memastikan tipe List
+          ...currentQuestion.getShuffelAnswer().map((answer) {
+            return AnswerButton(
+              answerText: answer,
+              onTap: () {
+                answerQuestion(answer);
+              },
+            );
+          }).toList(),
         ],
       ),
     );
