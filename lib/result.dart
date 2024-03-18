@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:kuis/data/dataquestion.dart';
+import 'package:kuis/questions_summary/question_summary.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ResultScreen extends StatelessWidget {
-  const ResultScreen({super.key, required this.chosenAnswers});
+  const ResultScreen({
+    super.key, 
+    required this.chosenAnswers,
+    required this.onRestart,
+    });
 
   final List<String> chosenAnswers;
+  final void Function() onRestart;
 
 
   List<Map<String, Object>> getSummaryData() {
@@ -26,19 +33,45 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final summaryData = getSummaryData();
+    final numTotalQuestions = questions.length;
+    //fungsi where adalah untuk memfilter dari item yang sudah ada
+    //tanpa merubah item yang sebelumnya ada. 
+    final numCorrectQuestions = summaryData.where((data) {
+      return data['user_answer'] == data['correct_answer'];
+    }).length;
+
     return SizedBox(
       width: double.infinity,
       child: Container(
         margin: const EdgeInsets.all(40),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Selamat Nilai kamu 80 yaitu dari 10 pertanyaan yang benar 8!!'),
+            Text(
+              'Pertanyaan yang benar $numCorrectQuestions dari $numTotalQuestions pertanyaan',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight:FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 30),
-            const Text('List question and answer'),
+            QuestionsSummary(summaryData),
             const SizedBox(height: 30),
-            TextButton(
-              onPressed: () {}, 
-              child: const Text('Mulai Ulang!')
+            TextButton.icon(
+              onPressed: onRestart, 
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.refresh),
+              label: Text(
+                "Mulai Ulang!",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                ),
+              ),
             )
           ],
         ),

@@ -32,10 +32,18 @@ class _QuizState extends State<Quiz> {
     //logic jika pertanyaan selesai maka akan ditampilkan ke result screen
     if (selectedAnswer.length == questions.length) {
       setState(() {
-        selectedAnswer = [];
+        // selectedAnswer = []; //code ini dihapus sementara karena tampilan akan fokus,
+        // pada menampilkan hasil jawaban yang dipilih.
         activeScreen = 'result-screen';
       });
     }
+  }
+
+  void restartQuiz() {
+    setState(() {
+      selectedAnswer= [];
+      activeScreen = 'question-screen';
+    });
   }
 
   @override
@@ -47,7 +55,10 @@ class _QuizState extends State<Quiz> {
     }
 
     if (activeScreen == 'result-screen') {
-      screenWidget = ResultScreen(chosenAnswers: selectedAnswer);
+      screenWidget = ResultScreen(
+        chosenAnswers: selectedAnswer,
+        onRestart: restartQuiz,
+        );
     }
 
     return MaterialApp(
